@@ -73,8 +73,6 @@ func (s *Server) Start() error {
 
 				if err != nil {
 					s.Errors <- err
-
-					continue
 				}
 			}
 		}()
