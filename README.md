@@ -3,7 +3,8 @@ a simple, lightweight TCP server package for building RESP apps
 
 ---
 
-TCP: https://en.wikipedia.org/wiki/Transmission_Control_Protocol 
+TCP: https://en.wikipedia.org/wiki/Transmission_Control_Protocol
+
 RESP: https://redis.io/topics/protocol
 
 ---
