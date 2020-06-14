@@ -76,3 +76,12 @@ $ printf "+hello\r\n+goodbye\r\n+integer\r\n+null\r\npoop\r\n" | netcat 127.0.0.
 $-1
 -wtf?
 ```
+
+logs...
+```
+hello
+goodbye
+integer
+null
+[poop]
+```
