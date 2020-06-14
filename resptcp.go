@@ -47,13 +47,13 @@ func (s *Server) Start() error {
 			reader := resp.NewReader(bufio.NewReader(connection))
 
 			for {
-				value, _, err := reader.ReadValue()
+				input, _, err := reader.ReadValue()
 
 				if err == io.EOF {
 					return
 				}
 
-				value, err = s.handler(value, err)
+				output, err := s.handler(input, err)
 
 				if err != nil {
 					s.Errors <- err
@@ -61,7 +61,7 @@ func (s *Server) Start() error {
 					continue
 				}
 
-				marshalled, err := value.MarshalRESP()
+				marshalled, err := output.MarshalRESP()
 
 				if err != nil {
 					s.Errors <- err
@@ -77,4 +77,6 @@ func (s *Server) Start() error {
 			}
 		}()
 	}
+
+	return nil
 }
