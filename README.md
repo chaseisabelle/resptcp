@@ -1,11 +1,22 @@
 # RESPTCP
-a simple, lightweight TCP server package for building RESP apps
+a simple, lightweight TCP server package for building simple RESP apps
 
 ---
 
 TCP: https://en.wikipedia.org/wiki/Transmission_Control_Protocol
 
 RESP: https://redis.io/topics/protocol
+
+---
+
+### how it works
+
+1. client sends a single RESP message (i.e. `+hello\r\n`)
+2. server receives single RESP message over TCP
+3. server passes single RESP message to handler
+4. handler return RESP message(s) to server
+5. server responds to client with RESP message(s)
+6. client does whatever
 
 ---
 
@@ -85,3 +96,21 @@ integer
 null
 [poop]
 ```
+
+---
+
+### limitations
+
+the biggest limitation is that the server only handles 
+a single incoming message at a time. if you want to
+handle more than one line, you'll need to send it as
+an array of lines.
+
+for example, if you send `+hello\r\n+goodbye\r\n`, the
+server will call the handler twice, the first time to
+handle `+hello\r\n`, and the second time to handle
+`+goodbye\r\n`.
+
+in the example above, if you wanted to handle both lines
+in the same handler call, you would need to send it as
+an array: `*2\r\n+hello\r\n+goodbye\r\n`.
