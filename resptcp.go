@@ -2,22 +2,24 @@ package resptcp
 
 import (
 	"bufio"
+	"github.com/chaseisabelle/goresp"
 	"github.com/chaseisabelle/stop"
-	"github.com/tidwall/resp"
 	"io"
 	"net"
 )
 
 type Server struct {
-	host    string
-	handler func(resp.Value, error) (resp.Value, error)
-	Errors  chan error
+	host      string
+	handler   func([]goresp.Value, error) ([]goresp.Value, error)
+	delimiter byte
+	Errors    chan error
 }
 
-func New(host string, handler func(resp.Value, error) (resp.Value, error)) *Server {
+func New(host string, handler func([]goresp.Value, error) ([]goresp.Value, error), delimiter byte) *Server {
 	return &Server{
-		host:    host,
-		handler: handler,
+		host:      host,
+		handler:   handler,
+		delimiter: delimiter,
 	}
 }
 
@@ -32,7 +34,7 @@ func (s *Server) Start() error {
 		err = listener.Close()
 
 		if err != nil {
-			panic(err.Error())
+			s.Errors <- err
 		}
 	}()
 
@@ -44,16 +46,23 @@ func (s *Server) Start() error {
 		}
 
 		go func() {
-			reader := resp.NewReader(bufio.NewReader(connection))
+			reader := bufio.NewReader(connection)
 
 			for {
-				input, _, err := reader.ReadValue()
+				input, err := reader.ReadBytes(s.delimiter)
 
 				if err == io.EOF {
 					return
 				}
 
-				output, err := s.handler(input, err)
+				if err != nil {
+					s.Errors <- err
+
+					continue
+				}
+
+				values, err := goresp.Decode(input[:len(input)-1])
+				values, err = s.handler(values, err)
 
 				if err != nil {
 					s.Errors <- err
@@ -61,7 +70,7 @@ func (s *Server) Start() error {
 					continue
 				}
 
-				marshalled, err := output.MarshalRESP()
+				output, err := goresp.Encode(values)
 
 				if err != nil {
 					s.Errors <- err
@@ -69,7 +78,7 @@ func (s *Server) Start() error {
 					continue
 				}
 
-				_, err = connection.Write(marshalled)
+				_, err = connection.Write(output)
 
 				if err != nil {
 					s.Errors <- err

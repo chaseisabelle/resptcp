@@ -1,11 +1,10 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
+	"github.com/chaseisabelle/goresp"
 	"github.com/chaseisabelle/resptcp"
-	"github.com/tidwall/resp"
 )
 
 // example of tcp resp server
@@ -16,7 +15,7 @@ func main() {
 	flag.Parse()
 
 	// create it
-	srv := resptcp.New(*host, handler)
+	srv := resptcp.New(*host, handler, '\000')
 
 	// listen for server errors
 	go func() {
@@ -34,29 +33,34 @@ func main() {
 }
 
 // handle incoming connection input and give it a response
-func handler(value resp.Value, err error) (resp.Value, error) {
+func handler(input []goresp.Value, err error) ([]goresp.Value, error) {
+	// define the output
+	output := make([]goresp.Value, 0)
+
 	// handle server read error, if needed
 	if err != nil {
-		return resp.ErrorValue(err), nil
+		return append(output, goresp.NewError(err)), nil
 	}
 
-	// check and see what we got
-	println(fmt.Sprintf("%+v", value))
+	// inspect what we got
+	println(fmt.Sprintf("%+v", input))
 
-	// build a reply
-	switch value.String() {
-	case "hello":
-		value = resp.SimpleStringValue("hi!")
-	case "goodbye":
-		value = resp.SimpleStringValue("kthxbye")
-	case "integer":
-		value = resp.IntegerValue(1)
-	case "null":
-		value = resp.NullValue()
-	default:
-		value = resp.ErrorValue(errors.New("wtf?"))
+	for _, value := range input {
+		s, sErr := value.String()
+		i, iErr := value.Integer()
+		e, eErr := value.Error()
+		a, aErr := value.Array()
+		f, fErr := value.Float()
+		nErr := value.Null()
+
+		println(fmt.Sprintf("%s %+v", s, sErr))
+		println(fmt.Sprintf("%d %+v", i, iErr))
+		println(fmt.Sprintf("%+v %+v", e, eErr))
+		println(fmt.Sprintf("%+v %+v", a, aErr))
+		println(fmt.Sprintf("%f %+v", f, fErr))
+		println(fmt.Sprintf("%+v", nErr))
 	}
 
 	// respond
-	return value, nil
+	return append(output, goresp.NewSimpleString("ok")), nil
 }
