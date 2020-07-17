@@ -101,16 +101,13 @@ null
 
 ### limitations
 
-the biggest limitation is that the server only handles 
-a single incoming message at a time. if you want to
-handle more than one line, you'll need to send it as
-an array of lines.
+you must designate a delimiter. in the example, i
+use the null byte `\000`. this is how the server 
+knows it is ready to parse the input. you can send
+multiple chunks of input; however, they must all
+terminate with your specified delimiter.
 
-for example, if you send `+hello\r\n+goodbye\r\n`, the
-server will call the handler twice, the first time to
-handle `+hello\r\n`, and the second time to handle
-`+goodbye\r\n`.
-
-in the example above, if you wanted to handle both lines
-in the same handler call, you would need to send it as
-an array: `*2\r\n+hello\r\n+goodbye\r\n`.
+for example, if you specify `\000` as your delimiter,
+you can send `+hello\r\n+world\r\n\000` to send the
+two simple strings `"hello"` and `"world"`. your client
+can now send more, or send `EOF` to terminate/complete.
