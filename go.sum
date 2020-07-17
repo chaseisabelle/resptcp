@@ -1,0 +1,4 @@
+github.com/chaseisabelle/goresp v0.0.0-20200717104745-ed1fa67484d7 h1:C2v0HWDWAl83u6eKdbqVRxUmLsBmHZQHQdr5BBqJoj4=
+github.com/chaseisabelle/goresp v0.0.0-20200717104745-ed1fa67484d7/go.mod h1:7hKe6VM9TyQBY0vKstGM+GM+9DPt+VI6/Z4uyC/nkQE=
+github.com/chaseisabelle/stop v0.0.0-20200618171241-f00e840d9150 h1:fvRli5qPyuU7QhzX4PeD3LEYk8viN8Za3Ng+UVvl4IU=
+github.com/chaseisabelle/stop v0.0.0-20200618171241-f00e840d9150/go.mod h1:uxFDG6JcsLwqkjLp4XRYyodBPfuenRG6ov0a81hAWSs=

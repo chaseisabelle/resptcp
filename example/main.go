@@ -47,10 +47,10 @@ func handler(input []goresp.Value, err error) ([]goresp.Value, error) {
 
 	for _, value := range input {
 		s, sErr := value.String()
-		i, iErr := value.Integer()
+		i, iErr := value.Int()
 		e, eErr := value.Error()
 		a, aErr := value.Array()
-		f, fErr := value.Float()
+		f, fErr := value.Float64()
 		nErr := value.Null()
 
 		println(fmt.Sprintf("%s %+v", s, sErr))
