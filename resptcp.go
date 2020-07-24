@@ -64,6 +64,10 @@ func (s *Server) Start() error {
 				values, err := goresp.Decode(input[:len(input)-1])
 				values, err = s.handler(values, err)
 
+				if err == io.EOF {
+					return
+				}
+
 				if err != nil {
 					s.Errors <- err
 
